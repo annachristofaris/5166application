@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -6,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -15,49 +17,56 @@ public class CatalogController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
         String url = "/categories.jsp";
         String value = request.getParameter("value");
         // Initialize the database and get all items
         ItemDB database = ItemDB.getDatabase();
-        
+        boolean favorited = false;
+        HttpSession session = request.getSession();
+
         if (action == null || action.equals("")) {
             ArrayList<Item> popularItems = database.getItemsByCategory("popular");
             request.setAttribute("popularItems", popularItems);
-            
+
             ArrayList<Item> tipItems = database.getItemsByCategory("tips");
             request.setAttribute("tipItems", tipItems);
-            
+
             getServletContext().getRequestDispatcher(url).forward(request, response);
 
-        }
-        else if (action.equals("details")) {
+        } else if (action.equals("details")) {
             url = "/item.jsp";
             // New java bean
             Item detailItem = database.getItem(value);
             request.setAttribute("detailItem", detailItem);
             getServletContext().getRequestDispatcher(url).forward(request, response);
-        }
-        else if(action.equals("rating")) {
+        } else if (action.equals("rating")) {
             url = "/item.jsp";
             String rating = request.getParameter("newRating");
+
+            //check if "favorite this item" box is checked
+            if (request.getParameter("favorite") != null) {
+                favorited = true;
+            }
+
             Item detailItem = database.getItem(value);
             detailItem.setRating(rating);
             request.setAttribute("detailItem", detailItem);
+
+            //check if rating submittal is coming from a logged-in user
+            UserProfile currentProfile = (UserProfile) session.getAttribute("userCP");
+            //check if item is in User Profile's list
+            if (currentProfile != null) {
+                if (currentProfile.isInList(detailItem)) {
+                    currentProfile.updateItem(detailItem, rating, favorited);
+                    //send back to their list after feedback is submitted
+                    url = "/myItems.jsp";
+                }
+            }
             getServletContext().getRequestDispatcher(url).forward(request, response);
         }
-                
-    
-        
-        // Name that will be used in categories jsp to access the above data is "item"
-//        request.setAttribute("item", item1);
-        
-//        ItemDB database = ItemDB.getDatabase();
-//        ArrayList<Item> allItems = database.getItems();
-//       request.setAttribute("model", allItems);
-       
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

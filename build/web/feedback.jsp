@@ -1,55 +1,60 @@
+<%-- 
+    Document   : item
+    Created on : Feb 25, 2019, 7:47:11 PM
+    Author     : annachristofaris
+--%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-           <div class="row justify-content-center">
-                <div class="row">
-                    <a href="./myItems.jsp"><i class="fas fa-plus-circle"> Save to Your Corner</i></a>
-                    <div class="col-8">
-                    <!-- placeholder for average rating -->
-                    <i action="CatalogController?action=rating&rating=1&value=${detailItem.itemCode}" class="fas fa-star one"></i>
-                    <i action="CatalogController?action=rating&rating=2&value=${detailItem.itemCode}" class="fas fa-star two"></i>
-                    <i action="CatalogController?action=rating&rating=3&value=${detailItem.itemCode}" class="fas fa-star three"></i>
-                    <i action="CatalogController?action=rating&rating=4&value=${detailItem.itemCode}" class="fas fa-star four"></i><br>
-                    <span>Rating: ${detailItem.rating}</span>
-                    
-                    <form action="CatalogController?action=rating&value=${detailItem.itemCode}" method="post">
-<!--                        <input type="checkbox" name="newRating" value="1"/><i class="fas fa-star one"></i>
-                        <input type="checkbox" name="newRating" value="2"/><br><i class="fas fa-star two"></i>
-                        <input type="checkbox" name="newRating" value="3"/><br><i class="fas fa-star three"></i>
-                        <input type="checkbox" name="newRating" value="4"/><br><i class="fas fa-star four"></i>-->
-                        <select name="newRating">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                        <input type="submit" />
-                    </form>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!DOCTYPE html>
+<html lang="en">
+    <jsp:include page ="./header.jsp" />
+
+    <body>
+        <jsp:include page ="./user-navigation.jsp" />
+
+        <jsp:include page ="./site-navigation.jsp" />
+
+        <!-- bootstrap for  main content area -->
+        <div class="col-10 mainArea">
+            <h1>${detailItem.title}</h1>              
+            <h2>Submit your rating: </h2>
+
+            <form action="CatalogController?action=rating&value=${detailItem.itemCode}" method="post">
+
+                <select name="newRating">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+
+
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="customCheck1" name ="favorite">
+                    <label class="custom-control-label" for="customCheck1">Favorite this page?</label>
                 </div>
+
+                <input type="submit" />
+                <input type="hidden" name="value" value ="${detailItem.itemCode}">
+                <input type='hidden' name="action" value ="rating">
+
+
+            </form>
+
+            <div class="row justify-content-left">
+                <div class="col-10">
+                    <img src=${detailItem.imageURL} alt="itemDetail">
+                    <ul>
+                        <li>${detailItem.desc}</li>
+
+                    </ul>
                 </div>
- </div>
+            </div>
 
-<!--Script for ratings and making stars clickable-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-<script>
+        </div>
 
-    $('.fa-star.one').click(function() {
-      $('.fa-star').removeClass('starfill');
-      $('.fa-star.one').addClass('starfill');
-    });
-    
-    $('.fa-star.two').click(function() {
-      $('.fa-star').removeClass('starfill');
-      $('.fa-star.one, .fa-star.two').addClass('starfill');
-    });
-    
-    $('.fa-star.three').click(function() {
-      $('.fa-star').removeClass('starfill');
-      $('.fa-star.one, .fa-star.two, .fa-star.three').addClass('starfill');
-    });
-    
-    $('.fa-star.four').click(function() {
-      $('.fa-star').removeClass('starfill');
-      $('.fa-star.one, .fa-star.two, .fa-star.three, .fa-star.four').addClass('starfill');
-    });
-   
-    </script>
+        <jsp:include page ="footer.jsp" />
+    </body>
